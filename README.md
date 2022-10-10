@@ -1,3 +1,3 @@
-# Devide and Conquer Algorithm
-
-Here comes a description of the algorithm.
+# Convex Hull
+- Devide and conquer
+- Graham Scan
