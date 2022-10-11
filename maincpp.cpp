@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include "Timing.h"
 
 using namespace cv;
 using namespace std;
@@ -21,10 +22,11 @@ static void help(char** argv)
 
 void performanceTest(int cols, int rows)
 {
+    Timing* measureTime = Timing::getInstance();
     vector<Point> points;
     RNG& rng_perf = theRNG();
     // number of points
-    int i, count = 1000;
+    int i, count = 1000000;
     for (i = 0; i < count; i++)
     {
         Point pt;
@@ -35,10 +37,15 @@ void performanceTest(int cols, int rows)
     vector<Point> hull;
     if (g_switch_value == 0) {
         // OpenCV
+        // measureTime->startSetup();
         cout << "\nOpenOV convexHull algorithm" << endl;
+        measureTime->startRecord("Open CV");
+        // measureTime->startComputation();
         convexHull(points, hull, true);
         // g_switch_value_performance = 0;
-        cout << "\nTime:" << endl;
+        measureTime->stopRecord("Open CV");
+        measureTime->print(true);
+        // cout << "\nTime:" << measureTime->getResults() << endl;
     }
 }
 
