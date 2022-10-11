@@ -23,8 +23,12 @@ void switch_callback(int position, void*) {
     if (position == 0) {
         cout << "\nOpenCV" << endl;
     }
-    else {
+    else if (position == 1) {
         cout << "\nGraham" << endl;
+    }
+    else
+    {
+        cout << "\nDivide & Conquer" << endl;
     }
 }
 
