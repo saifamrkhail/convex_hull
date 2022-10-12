@@ -5,8 +5,8 @@
 #include "DivideAndConquer.h"
 #include "Timing.h"
 
-//calculating the quadrant of a particular point
-int DivideAndConquer::quad(Point p) {
+//calculating the quadrant of a particular Point2f
+int DivideAndConquer::quad(Point2f p) {
     if (p.x >= 0 && p.y >= 0)
         return 1;
     if (p.x <= 0 && p.y >= 0)
@@ -17,7 +17,7 @@ int DivideAndConquer::quad(Point p) {
 }
 
 //if line is touching the polygon
-int DivideAndConquer::calcLine(Point a, Point b, Point c) {
+int DivideAndConquer::calcLine(Point2f a, Point2f b, Point2f c) {
     int res = (b.y - a.y) * (c.x - b.x) -
               (c.y - b.y) * (b.x - a.x);
     if (res == 0) {
@@ -32,9 +32,9 @@ int DivideAndConquer::calcLine(Point a, Point b, Point c) {
 }
 
 //comparing functions for sorting
-bool DivideAndConquer::compare(Point p1, Point q1) {
-    Point p = Point(p1.x - mid.x,p1.y - mid.y);
-    Point q = Point(q1.x - mid.x,q1.y - mid.y);
+bool DivideAndConquer::compare(Point2f p1, Point2f q1) {
+    Point2f p = Point2f(p1.x - mid.x,p1.y - mid.y);
+    Point2f q = Point2f(q1.x - mid.x,q1.y - mid.y);
     int one = quad(p);
     int two = quad(q);
     if (one != two)
@@ -43,7 +43,7 @@ bool DivideAndConquer::compare(Point p1, Point q1) {
 }
 
 //finding the upper tangent for both polygons
-vector<Point> DivideAndConquer::merger(vector<Point> a, vector<Point> b) {
+vector<Point2f> DivideAndConquer::merger(vector<Point2f> a, vector<Point2f> b) {
     int n1 = a.size(), n2 = b.size();
     int ia = 0, ib = 0;
 
@@ -97,7 +97,7 @@ vector<Point> DivideAndConquer::merger(vector<Point> a, vector<Point> b) {
     }
 
     int lowera = inda, lowerb = indb;
-    vector<Point> ret;
+    vector<Point2f> ret;
     //merging the two polygons to get convex hull
     int ind = uppera;
     ret.push_back(a[uppera]);
@@ -119,8 +119,8 @@ vector<Point> DivideAndConquer::merger(vector<Point> a, vector<Point> b) {
 }
 
 //brute force algo to find convex hull
-vector<Point> DivideAndConquer::bruteHull(vector<Point> a) {
-    set<Point,comparePoint> s;
+vector<Point2f> DivideAndConquer::bruteHull(vector<Point2f> a) {
+    set<Point2f,comparePoint> s;
     for (int i = 0; i < a.size(); i++) {
         for (int j = i + 1; j < a.size(); j++) {
             int x1 = a[i].x, x2 = a[j].x;
@@ -141,7 +141,7 @@ vector<Point> DivideAndConquer::bruteHull(vector<Point> a) {
             }
         }
     }
-    vector<Point> ret;
+    vector<Point2f> ret;
     for (auto e: s)
         ret.push_back(e);
     //moving through anti clockwise direction
@@ -153,21 +153,21 @@ vector<Point> DivideAndConquer::bruteHull(vector<Point> a) {
         ret[i].x *= n;
         ret[i].y *= n;
     }
-    sort(ret.begin(), ret.end(), [this] (Point p1, Point q1) {
+    sort(ret.begin(), ret.end(), [this] (Point2f p1, Point2f q1) {
         return compare(p1, q1);
     });
 
     for (int i = 0; i < n; i++)
-        ret[i] = Point(ret[i].x / n, ret[i].y / n);
+        ret[i] = Point2f(ret[i].x / n, ret[i].y / n);
     return ret;
 }
 
 //returning the value of convex hull
-vector<Point> DivideAndConquer::convexHull(vector<Point> points) {
+vector<Point2f> DivideAndConquer::convexHull(vector<Point2f> points) {
 
     Timing* measureTime = Timing::getInstance();
 
-    sort(points.begin(), points.end(), [](Point p, Point q) {
+    sort(points.begin(), points.end(), [](Point2f p, Point2f q) {
         if (p.x < q.x) return true;
         if (p.x > q.x) return false;
         if (p.y < q.y) return true;
@@ -180,7 +180,7 @@ vector<Point> DivideAndConquer::convexHull(vector<Point> points) {
 
     // left contains the left half points
     // right contains the right half points
-    vector<Point> left, right;
+    vector<Point2f> left, right;
 
     for (int i = 0; i < points.size() / 2; i++) {
         left.push_back(points[i]);
@@ -191,14 +191,14 @@ vector<Point> DivideAndConquer::convexHull(vector<Point> points) {
     }
 
     //divide in left and right
-    vector<Point> left_hull = convexHull(left);
-    vector<Point> right_hull = convexHull(right);
+    vector<Point2f> left_hull = convexHull(left);
+    vector<Point2f> right_hull = convexHull(right);
 
     measureTime->stopRecord("Giftwrapping");
     measureTime->print(false);
 
     //merging the convex hulls
-    vector<Point> hull = merger(left_hull, right_hull);
+    vector<Point2f> hull = merger(left_hull, right_hull);
 
     measureTime->stopRecord("Giftwrapping");
     measureTime->print(false);
@@ -207,7 +207,7 @@ vector<Point> DivideAndConquer::convexHull(vector<Point> points) {
 }
 
 //draw convex hull step by step
-void DivideAndConquer::convexHullVis(vector<cv::Point> points, vector<cv::Point>& hull, cv::Mat& matrix) {
+void DivideAndConquer::convexHullVis(vector<cv::Point2f> points, vector<cv::Point2f>& hull, cv::Mat& matrix) {
 
     cv::Scalar blue(255, 0, 0);
     cv::Scalar green(0, 255, 0);
@@ -215,7 +215,7 @@ void DivideAndConquer::convexHullVis(vector<cv::Point> points, vector<cv::Point>
     cv::Scalar black(0, 0, 0);
     int num_points = points.size();
 
-    sort(points.begin(), points.end(), [](Point p, Point q) {
+    sort(points.begin(), points.end(), [](Point2f p, Point2f q) {
         if (p.x < q.x) return true;
         if (p.x > q.x) return false;
         if (p.y < q.y) return true;

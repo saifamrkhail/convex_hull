@@ -26,28 +26,28 @@ class DivideAndConquer {
 
 public:
     //storing the center point of polygon
-    Point mid;
+    Point2f mid;
 
     //calculating the quadrant of a particular point
-    int quad(Point p);
+    int quad(Point2f p);
 
     //if line is touching the polygon
-    int calcLine(Point a, Point b, Point c);
+    int calcLine(Point2f a, Point2f b, Point2f c);
 
     //comparing functions for sorting
-    bool compare(Point p1, Point q1);
+    bool compare(Point2f p1, Point2f q1);
 
     //finding the upper tangent for both polygons
-    vector<Point> merger(vector<Point> a, vector<Point> b);
+    vector<Point2f> merger(vector<Point2f> a, vector<Point2f> b);
 
     //brute force algo to find convex hull
-    vector<Point> bruteHull(vector<Point> a);
+    vector<Point2f> bruteHull(vector<Point2f> a);
 
     //returning the value of convex hull
-    vector<Point> convexHull(vector<Point> points);
+    vector<Point2f> convexHull(vector<Point2f> points);
 
     //draw convex hull step by step
-    void convexHullVis(vector<cv::Point> points, vector<cv::Point>& hull, cv::Mat& matrix);
+    void convexHullVis(vector<cv::Point2f> points, vector<cv::Point2f>& hull, cv::Mat& matrix);
 };
 
 #endif //CONVEX_HULL_DIVIDEANDCONQUER_H
