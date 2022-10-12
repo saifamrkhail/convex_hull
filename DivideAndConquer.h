@@ -44,7 +44,8 @@ public:
     vector<Point> bruteHull(vector<Point> a);
 
     //returning the value of convex hull
-    vector<Point> convexHull(vector<Point> a);
+    vector<Point> convexHull(vector<Point> points);
+
     //draw convex hull step by step
     void convexHullVis(vector<cv::Point> points, vector<cv::Point>& hull, cv::Mat& matrix);
 };

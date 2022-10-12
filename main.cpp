@@ -66,7 +66,7 @@ void switch_callback_perf(int, void *) {
 
 int main(int argc, char *argv[]) {
     std::cout << "Divide and Conquer Algorithm" << std::endl;
-    DivideAndConquer div_conq;
+    DivideAndConquer divideAndConquer;
 
     CommandLineParser parser(argc, argv, "{help h||}");
     if (parser.has("help")) {
@@ -96,11 +96,12 @@ int main(int argc, char *argv[]) {
 
     RNG &rng = theRNG();
     while (true) {
-        if (g_switch_value_performance == 0)
+        if (g_switch_value_performance == 0) {
             // visualisation
-        {
             int i, count = (unsigned) rng % 30 + 20;
+
             vector<Point> points;
+
             for (i = 0; i < count; i++) {
                 Point pt;
                 pt.x = rng.uniform(img.cols / 4, img.cols * 3 / 4);
@@ -108,25 +109,33 @@ int main(int argc, char *argv[]) {
                 points.push_back(pt);
             }
 
-            //TODO show here given Points
+            cv::Mat whiteMatrix(500, 500, CV_8UC3, cv::Scalar(255, 255, 255));
 
-            sort(points.begin(), points.end(), [](Point p, Point q) {
-                if (p.x < q.x) return true;
-                if (p.x > q.x) return false;
-                if (p.y < q.y) return true;
-                return false;
-            });
+            for (i = 0; i < count; i++) {
+                circle(whiteMatrix, points[i], 3, Scalar(0, 0, 255), FILLED, LINE_AA);
+            }
 
-            vector<Point> hull = div_conq.convexHull(points);
-            //convexHull(points, hull, true);
+            vector<Point> hull;
+            //divide and conquer step by step
+            divideAndConquer.convexHullVis(points, hull, whiteMatrix);
 
+            //convex hull in one shot
+            /*hull = divideAndConquer.convexHull(points);
             img = Scalar::all(0);
             for (i = 0; i < count; i++) {
                 circle(img, points[i], 3, Scalar(0, 0, 255), FILLED, LINE_AA);
             }
-
             polylines(img, hull, true, Scalar(0, 255, 0), 1, LINE_AA);
-            imshow("Convex Hull", img);
+            imshow("Convex Hull", img);*/
+
+            //convexHull of opencv lib
+            /*convexHull(points, hull, true);
+            img = Scalar::all(0);
+            for (i = 0; i < count; i++) {
+                circle(img, points[i], 3, Scalar(0, 0, 255), FILLED, LINE_AA);
+            }
+            polylines(img, hull, true, Scalar(0, 255, 0), 1, LINE_AA);
+            imshow("Convex Hull", img);*/
 
         } else {
             // performance

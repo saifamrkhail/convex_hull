@@ -2,7 +2,6 @@
 // Created by saif on 10/11/22.
 //
 
-
 #include "DivideAndConquer.h"
 
 //calculating the quadrant of a particular point
@@ -20,10 +19,14 @@ int DivideAndConquer::quad(Point p) {
 int DivideAndConquer::calcLine(Point a, Point b, Point c) {
     int res = (b.y - a.y) * (c.x - b.x) -
               (c.y - b.y) * (b.x - a.x);
-    if (res == 0)
+    if (res == 0) {
         return 0;
-    if (res > 0)
+    }
+
+    if (res > 0) {
         return 1;
+    }
+
     return -1;
 }
 
@@ -42,24 +45,40 @@ bool DivideAndConquer::compare(Point p1, Point q1) {
 vector<Point> DivideAndConquer::merger(vector<Point> a, vector<Point> b) {
     int n1 = a.size(), n2 = b.size();
     int ia = 0, ib = 0;
-    for (int i = 1; i < n1; i++)
-        if (a[i].x > a[ia].x)
+
+    //calculating rightmost point of a
+    for (int i = 1; i < n1; i++) {
+        if (a[i].x > a[ia].x) {
             ia = i;
+        }
+    }
+
+    // TODO mark rightmost point
+
     //calculating leftmost point of b
-    for (int i = 1; i < n2; i++)
-        if (b[i].x < b[ib].x)
+    for (int i = 1; i < n2; i++) {
+        if (b[i].x < b[ib].x) {
             ib = i;
+        }
+    }
+
+    // TODO mark leftmost point
+
     int inda = ia, indb = ib;
     bool done = 0;
     while (!done) {
         done = 1;
-        while (calcLine(b[indb], a[inda], a[(inda + 1) % n1]) >= 0)
+
+        while (calcLine(b[indb], a[inda], a[(inda + 1) % n1]) >= 0) {
             inda = (inda + 1) % n1;
+        }
+
         while (calcLine(a[inda], b[indb], b[(n2 + indb - 1) % n2]) <= 0) {
             indb = (n2 + indb - 1) % n2;
             done = 0;
         }
     }
+
     int uppera = inda, upperb = indb;
     inda = ia, indb = ib;
     done = 0;
@@ -137,31 +156,61 @@ vector<Point> DivideAndConquer::bruteHull(vector<Point> a) {
 }
 
 //returning the value of convex hull
-vector<Point> DivideAndConquer::convexHull(vector<Point> a) {
+vector<Point> DivideAndConquer::convexHull(vector<Point> points) {
 
-    if (a.size() <= 3) {
-        return bruteHull(a);
+    sort(points.begin(), points.end(), [](Point p, Point q) {
+        if (p.x < q.x) return true;
+        if (p.x > q.x) return false;
+        if (p.y < q.y) return true;
+        return false;
+    });
+
+    if (points.size() < 3) {
+        return bruteHull(points);
     }
 
     // left contains the left half points
     // right contains the right half points
     vector<Point> left, right;
 
-    for (int i = 0; i < a.size() / 2; i++) {
-        left.push_back(a[i]);
+    for (int i = 0; i < points.size() / 2; i++) {
+        left.push_back(points[i]);
     }
 
-    for (int i = a.size() / 2; i < a.size(); i++) {
-        right.push_back(a[i]);
+    for (int i = points.size() / 2; i < points.size(); i++) {
+        right.push_back(points[i]);
     }
 
+    //divide in left and right
     vector<Point> left_hull = convexHull(left);
     vector<Point> right_hull = convexHull(right);
+
     //merging the convex hulls
     return merger(left_hull, right_hull);
 }
 
 //draw convex hull step by step
-void convexHullVis(vector<cv::Point> points, vector<cv::Point>& hull, cv::Mat& matrix) {
+void DivideAndConquer::convexHullVis(vector<cv::Point> points, vector<cv::Point>& hull, cv::Mat& matrix) {
+
+    cv::Scalar blue(255, 0, 0);
+    cv::Scalar green(0, 255, 0);
+    cv::Scalar red(0, 0, 255);
+    cv::Scalar black(0, 0, 0);
+    int num_points = points.size();
+
+    sort(points.begin(), points.end(), [](Point p, Point q) {
+        if (p.x < q.x) return true;
+        if (p.x > q.x) return false;
+        if (p.y < q.y) return true;
+        return false;
+    });
+
+    if (points.size() < 3) {
+        return ;
+    }
+
+    cv::imshow("Convex Hull", matrix);
+    cv::waitKey(0);
+
 
 }
