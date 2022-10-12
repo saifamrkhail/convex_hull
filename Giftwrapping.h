@@ -12,4 +12,5 @@ public:
 	static void convexHull(std::vector<cv::Point2f> points, std::vector<cv::Point2f>& hull);
 	static void convexHullVis(std::vector<cv::Point2f> points, std::vector<cv::Point2f>& hull, cv::Mat& matrix);
 	static float orient2d(cv::Point2f a, cv::Point2f b, cv::Point2f c);
+	static float qdist(cv::Point2f a, cv::Point2f b);
 };
