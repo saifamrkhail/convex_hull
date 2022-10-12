@@ -65,10 +65,15 @@ int main(int argc, char* argv[]) {
         std::cout << "Enter filename:" << std::endl;
         std::string fname;
         std::cin >> fname;
+        std::cout << "Print Hull Points [Y/N]:" << std::endl;
+        char prnt;
+        std::cin >> prnt;
         pointsFromFile(points, fname);
         Giftwrapping::convexHull(points, hull);
-        for (cv::Point2f p : hull) {
-            std::cout << "(" << p.x << ", " << p.y << ")" << std::endl;
+        if (prnt == 'Y' || prnt == 'y') {
+            for (cv::Point2f p : hull) {
+                std::cout << "(" << p.x << ", " << p.y << ")" << std::endl;
+            }
         }
         break;
     }
