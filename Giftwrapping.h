@@ -3,6 +3,7 @@
 #include <opencv2/core/types.hpp>
 #include<opencv2/highgui/highgui.hpp>
 #include<opencv2/imgproc/imgproc.hpp>
+#include <chrono>
 #include "Timing.h"
 #pragma once
 
