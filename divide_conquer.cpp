@@ -5,22 +5,21 @@
 
 #include "divide_conquer.h"
 
-//calculating the quadrant of
-//a particular point
-int divide_conquer::quad(pair<int, int> p) {
-    if (p.first >= 0 && p.second >= 0)
+//calculating the quadrant of a particular point
+int divide_conquer::quad(Point p) {
+    if (p.x >= 0 && p.y >= 0)
         return 1;
-    if (p.first <= 0 && p.second >= 0)
+    if (p.x <= 0 && p.y >= 0)
         return 2;
-    if (p.first <= 0 && p.second <= 0)
+    if (p.x <= 0 && p.y <= 0)
         return 3;
     return 4;
 }
 
 //if line is touching the polygon
-int divide_conquer::calc_line(pair<int, int> a, pair<int, int> b, pair<int, int> c) {
-    int res = (b.second - a.second) * (c.first - b.first) -
-              (c.second - b.second) * (b.first - a.first);
+int divide_conquer::calc_line(Point a, Point b, Point c) {
+    int res = (b.y - a.y) * (c.x - b.x) -
+              (c.y - b.y) * (b.x - a.x);
     if (res == 0)
         return 0;
     if (res > 0)
@@ -29,28 +28,26 @@ int divide_conquer::calc_line(pair<int, int> a, pair<int, int> b, pair<int, int>
 }
 
 //comparing functions for sorting
-bool divide_conquer::compare(pair<int, int> p1, pair<int, int> q1) {
-    pair<int, int> p = make_pair(p1.first - mid.first,
-                                 p1.second - mid.second);
-    pair<int, int> q = make_pair(q1.first - mid.first,
-                                 q1.second - mid.second);
+bool divide_conquer::compare(Point p1, Point q1) {
+    Point p = Point(p1.x - mid.x,p1.y - mid.y);
+    Point q = Point(q1.x - mid.x,q1.y - mid.y);
     int one = quad(p);
     int two = quad(q);
     if (one != two)
         return (one < two);
-    return (p.second * q.first < q.second * p.first);
+    return (p.y * q.x < q.y * p.x);
 }
 
 //finding the upper tangent for both polygons
-vector<pair<int, int>> divide_conquer::merger(vector<pair<int, int> > a, vector<pair<int, int> > b) {
+vector<Point> divide_conquer::merger(vector<Point> a, vector<Point> b) {
     int n1 = a.size(), n2 = b.size();
     int ia = 0, ib = 0;
     for (int i = 1; i < n1; i++)
-        if (a[i].first > a[ia].first)
+        if (a[i].x > a[ia].x)
             ia = i;
     //calculating leftmost point of b
     for (int i = 1; i < n2; i++)
-        if (b[i].first < b[ib].first)
+        if (b[i].x < b[ib].x)
             ib = i;
     int inda = ia, indb = ib;
     bool done = 0;
@@ -78,7 +75,7 @@ vector<pair<int, int>> divide_conquer::merger(vector<pair<int, int> > a, vector<
         }
     }
     int lowera = inda, lowerb = indb;
-    vector<pair<int, int>> ret;
+    vector<Point> ret;
     //merging the two polygons to get convex hull
     int ind = uppera;
     ret.push_back(a[uppera]);
@@ -96,20 +93,20 @@ vector<pair<int, int>> divide_conquer::merger(vector<pair<int, int> > a, vector<
 }
 
 //brute force algo to find convex hull
-vector<pair<int, int>> divide_conquer::bruteHull(vector<pair<int, int>> a) {
-    set<pair<int, int> > s;
+vector<Point> divide_conquer::bruteHull(vector<Point> a) {
+    set<Point,comparePoint> s;
     for (int i = 0; i < a.size(); i++) {
         for (int j = i + 1; j < a.size(); j++) {
-            int x1 = a[i].first, x2 = a[j].first;
-            int y1 = a[i].second, y2 = a[j].second;
+            int x1 = a[i].x, x2 = a[j].x;
+            int y1 = a[i].y, y2 = a[j].y;
             int a1 = y1 - y2;
             int b1 = x2 - x1;
             int c1 = x1 * y2 - y1 * x2;
             int pos = 0, neg = 0;
             for (int k = 0; k < a.size(); k++) {
-                if (a1 * a[k].first + b1 * a[k].second + c1 <= 0)
+                if (a1 * a[k].x + b1 * a[k].y + c1 <= 0)
                     neg++;
-                if (a1 * a[k].first + b1 * a[k].second + c1 >= 0)
+                if (a1 * a[k].x + b1 * a[k].y + c1 >= 0)
                     pos++;
             }
             if (pos == a.size() || neg == a.size()) {
@@ -118,40 +115,40 @@ vector<pair<int, int>> divide_conquer::bruteHull(vector<pair<int, int>> a) {
             }
         }
     }
-    vector<pair<int, int>> ret;
+    vector<Point> ret;
     for (auto e: s)
         ret.push_back(e);
     //moving through anti clockwise direction
     mid = {0, 0};
     int n = ret.size();
     for (int i = 0; i < n; i++) {
-        mid.first += ret[i].first;
-        mid.second += ret[i].second;
-        ret[i].first *= n;
-        ret[i].second *= n;
+        mid.x += ret[i].x;
+        mid.y += ret[i].y;
+        ret[i].x *= n;
+        ret[i].y *= n;
     }
-    sort(ret.begin(), ret.end(), [this] (pair<int, int> p1, pair<int, int> q1) {
+    sort(ret.begin(), ret.end(), [this] (Point p1, Point q1) {
         return compare(p1, q1);
     });
 
     for (int i = 0; i < n; i++)
-        ret[i] = make_pair(ret[i].first / n, ret[i].second / n);
+        ret[i] = Point(ret[i].x / n, ret[i].y / n);
     return ret;
 }
 
 //returning the value of convex hull
-vector<pair<int, int>> divide_conquer::divide(vector<pair<int, int>> a) {
+vector<Point> divide_conquer::divide(vector<Point> a) {
     if (a.size() <= 5)
         return bruteHull(a);
     // left contains the left half points
     // right contains the right half points
-    vector<pair<int, int>> left, right;
+    vector<Point> left, right;
     for (int i = 0; i < a.size() / 2; i++)
         left.push_back(a[i]);
     for (int i = a.size() / 2; i < a.size(); i++)
         right.push_back(a[i]);
-    vector<pair<int, int>> left_hull = divide(left);
-    vector<pair<int, int>> right_hull = divide(right);
+    vector<Point> left_hull = divide(left);
+    vector<Point> right_hull = divide(right);
     //merging the convex hulls
     return merger(left_hull, right_hull);
 }

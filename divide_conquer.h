@@ -5,36 +5,50 @@
 #ifndef CONVEX_HULL_DIVIDE_CONQUER_H
 #define CONVEX_HULL_DIVIDE_CONQUER_H
 
+#include <opencv4/opencv2/imgproc.hpp>
+#include <opencv4/opencv2/highgui.hpp>
+#include <opencv4/opencv2/opencv.hpp>
+#include <iostream>
 #include <algorithm>
 #include <utility>
 #include <vector>
 #include <set>
 
+using namespace cv;
 using namespace std;
+
+struct comparePoint {
+    bool operator()(const Point & a, const Point & b) {
+        if (a.x < b.x) return true;
+        if (a.x > b.x) return false;
+        if (a.y < b.y) return true;
+        return false;
+    }
+};
 
 class divide_conquer {
 
 public:
     //storing the center point of polygon
-    pair<int, int> mid;
+    Point mid;
 
     //calculating the quadrant of a particular point
-    int quad(pair<int, int> p);
+    int quad(Point p);
 
     //if line is touching the polygon
-    int calc_line(pair<int, int> a, pair<int, int> b, pair<int, int> c);
+    int calc_line(Point a, Point b, Point c);
 
     //comparing functions for sorting
-    bool compare(pair<int, int> p1, pair<int, int> q1);
+    bool compare(Point p1, Point q1);
 
     //finding the upper tangent for both polygons
-    vector<pair<int, int>> merger(vector<pair<int, int> > a, vector<pair<int, int> > b);
+    vector<Point> merger(vector<Point> a, vector<Point> b);
 
     //brute force algo to find convex hull
-    vector<pair<int, int>> bruteHull(vector<pair<int, int>> a);
+    vector<Point> bruteHull(vector<Point> a);
 
     //returning the value of convex hull
-    vector<pair<int, int>> divide(vector<pair<int, int>> a);
+    vector<Point> divide(vector<Point> a);
 };
 
 #endif //CONVEX_HULL_DIVIDE_CONQUER_H
