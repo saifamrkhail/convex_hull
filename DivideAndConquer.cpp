@@ -3,10 +3,10 @@
 //
 
 
-#include "divide_conquer.h"
+#include "DivideAndConquer.h"
 
 //calculating the quadrant of a particular point
-int divide_conquer::quad(Point p) {
+int DivideAndConquer::quad(Point p) {
     if (p.x >= 0 && p.y >= 0)
         return 1;
     if (p.x <= 0 && p.y >= 0)
@@ -17,7 +17,7 @@ int divide_conquer::quad(Point p) {
 }
 
 //if line is touching the polygon
-int divide_conquer::calc_line(Point a, Point b, Point c) {
+int DivideAndConquer::calcLine(Point a, Point b, Point c) {
     int res = (b.y - a.y) * (c.x - b.x) -
               (c.y - b.y) * (b.x - a.x);
     if (res == 0)
@@ -28,7 +28,7 @@ int divide_conquer::calc_line(Point a, Point b, Point c) {
 }
 
 //comparing functions for sorting
-bool divide_conquer::compare(Point p1, Point q1) {
+bool DivideAndConquer::compare(Point p1, Point q1) {
     Point p = Point(p1.x - mid.x,p1.y - mid.y);
     Point q = Point(q1.x - mid.x,q1.y - mid.y);
     int one = quad(p);
@@ -39,7 +39,7 @@ bool divide_conquer::compare(Point p1, Point q1) {
 }
 
 //finding the upper tangent for both polygons
-vector<Point> divide_conquer::merger(vector<Point> a, vector<Point> b) {
+vector<Point> DivideAndConquer::merger(vector<Point> a, vector<Point> b) {
     int n1 = a.size(), n2 = b.size();
     int ia = 0, ib = 0;
     for (int i = 1; i < n1; i++)
@@ -53,9 +53,9 @@ vector<Point> divide_conquer::merger(vector<Point> a, vector<Point> b) {
     bool done = 0;
     while (!done) {
         done = 1;
-        while (calc_line(b[indb], a[inda], a[(inda + 1) % n1]) >= 0)
+        while (calcLine(b[indb], a[inda], a[(inda + 1) % n1]) >= 0)
             inda = (inda + 1) % n1;
-        while (calc_line(a[inda], b[indb], b[(n2 + indb - 1) % n2]) <= 0) {
+        while (calcLine(a[inda], b[indb], b[(n2 + indb - 1) % n2]) <= 0) {
             indb = (n2 + indb - 1) % n2;
             done = 0;
         }
@@ -67,9 +67,9 @@ vector<Point> divide_conquer::merger(vector<Point> a, vector<Point> b) {
     //calculating the lower tangent
     while (!done) {
         done = 1;
-        while (calc_line(a[inda], b[indb], b[(indb + 1) % n2]) >= 0)
+        while (calcLine(a[inda], b[indb], b[(indb + 1) % n2]) >= 0)
             indb = (indb + 1) % n2;
-        while (calc_line(b[indb], a[inda], a[(n1 + inda - 1) % n1]) <= 0) {
+        while (calcLine(b[indb], a[inda], a[(n1 + inda - 1) % n1]) <= 0) {
             inda = (n1 + inda - 1) % n1;
             done = 0;
         }
@@ -93,7 +93,7 @@ vector<Point> divide_conquer::merger(vector<Point> a, vector<Point> b) {
 }
 
 //brute force algo to find convex hull
-vector<Point> divide_conquer::bruteHull(vector<Point> a) {
+vector<Point> DivideAndConquer::bruteHull(vector<Point> a) {
     set<Point,comparePoint> s;
     for (int i = 0; i < a.size(); i++) {
         for (int j = i + 1; j < a.size(); j++) {
@@ -137,7 +137,7 @@ vector<Point> divide_conquer::bruteHull(vector<Point> a) {
 }
 
 //returning the value of convex hull
-vector<Point> divide_conquer::divide(vector<Point> a) {
+vector<Point> DivideAndConquer::convexHull(vector<Point> a) {
     if (a.size() <= 5)
         return bruteHull(a);
     // left contains the left half points
@@ -147,8 +147,8 @@ vector<Point> divide_conquer::divide(vector<Point> a) {
         left.push_back(a[i]);
     for (int i = a.size() / 2; i < a.size(); i++)
         right.push_back(a[i]);
-    vector<Point> left_hull = divide(left);
-    vector<Point> right_hull = divide(right);
+    vector<Point> left_hull = convexHull(left);
+    vector<Point> right_hull = convexHull(right);
     //merging the convex hulls
     return merger(left_hull, right_hull);
 }

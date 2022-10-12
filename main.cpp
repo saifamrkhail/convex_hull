@@ -1,11 +1,13 @@
+#include <opencv4/opencv2/imgproc.hpp>
+#include <opencv4/opencv2/highgui.hpp>
+#include <algorithm>
 
-#include "divide_conquer.h"
+#include "DivideAndConquer.h"
 #include "Timing.h"
 
 using namespace cv;
 using namespace std;
 
-//OpenCV
 int g_switch_value = 0;
 int g_switch_value_performance = 0;
 
@@ -71,33 +73,8 @@ void switch_callback_perf(int, void*) {
 
 int main(int argc, char* argv[]) {
     std::cout << "Divide and Conquer Algorithm" << std::endl;
-    divide_conquer div_conq;
+    DivideAndConquer div_conq;
 
-    vector<Point> a;
-    a.push_back(Point(0, 0));
-    a.push_back(Point(1, -4));
-    a.push_back(Point(-1, -5));
-    a.push_back(Point(-5, -3));
-    a.push_back(Point(-3, -1));
-    a.push_back(Point(-1, -3));
-    a.push_back(Point(-2, -2));
-    a.push_back(Point(-1, -1));
-    a.push_back(Point(-2, -1));
-    a.push_back(Point(-1, 1));
-    int n = a.size();
-
-    sort(a.begin(), a.end(), [](Point p, Point q) {
-        if (p.x < q.x) return true;
-        if (p.x > q.x) return false;
-        if (p.y < q.y) return true;
-        return false;
-    });
-    vector<Point> ans = div_conq.divide(a);
-    cout << "Convex Hull:\n";
-    for (auto e: ans)
-        cout << e.x << " " << e.y << endl;
-
-    //OpenCV
     CommandLineParser parser(argc, argv, "{help h||}");
     if (parser.has("help"))
     {
@@ -148,7 +125,7 @@ int main(int argc, char* argv[]) {
                 return false;
             });
 
-            vector<Point> hull = div_conq.divide(points);
+            vector<Point> hull = div_conq.convexHull(points);
             //convexHull(points, hull, true);
 
             img = Scalar::all(0);

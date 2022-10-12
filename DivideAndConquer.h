@@ -2,15 +2,11 @@
 // Created by saif on 10/11/22.
 //
 
-#ifndef CONVEX_HULL_DIVIDE_CONQUER_H
-#define CONVEX_HULL_DIVIDE_CONQUER_H
+#ifndef CONVEX_HULL_DIVIDEANDCONQUER_H
+#define CONVEX_HULL_DIVIDEANDCONQUER_H
 
-#include <opencv4/opencv2/imgproc.hpp>
-#include <opencv4/opencv2/highgui.hpp>
 #include <opencv4/opencv2/opencv.hpp>
 #include <iostream>
-#include <algorithm>
-#include <utility>
 #include <vector>
 #include <set>
 
@@ -26,7 +22,7 @@ struct comparePoint {
     }
 };
 
-class divide_conquer {
+class DivideAndConquer {
 
 public:
     //storing the center point of polygon
@@ -36,7 +32,7 @@ public:
     int quad(Point p);
 
     //if line is touching the polygon
-    int calc_line(Point a, Point b, Point c);
+    int calcLine(Point a, Point b, Point c);
 
     //comparing functions for sorting
     bool compare(Point p1, Point q1);
@@ -48,7 +44,7 @@ public:
     vector<Point> bruteHull(vector<Point> a);
 
     //returning the value of convex hull
-    vector<Point> divide(vector<Point> a);
+    vector<Point> convexHull(vector<Point> a);
 };
 
-#endif //CONVEX_HULL_DIVIDE_CONQUER_H
+#endif //CONVEX_HULL_DIVIDEANDCONQUER_H
