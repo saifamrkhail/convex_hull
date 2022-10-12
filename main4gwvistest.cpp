@@ -8,7 +8,41 @@
 #include<opencv2/imgproc/imgproc.hpp>
 #include "Giftwrapping.h"
 
+void displayMenu() {
+    std::cout << "===================================================== \n";
+    std::cout << " \t\tMENU \t \n ";
+    std::cout << "===================================================== \n";
+    std::cout << " 1.Visualize for Random Points\n";
+    std::cout << " 2.Test Performance for File Points\n";
+}
+
+void generateRandPoints(std::vector<cv::Point2f>& points, int n, int xlim, int ylim) {
+    cv::RNG& rng = cv::theRNG();
+    for (int i = 0; i < n; i++) {
+        points.push_back(cv::Point2f(rng.uniform(xlim / 8, xlim * 7 / 8), rng.uniform(ylim / 8, ylim * 7 / 8)));
+    }
+}
+
+void pointsFromFile(std::vector<cv::Point2f>& points, std::string fname) {
+    std::ifstream infile(fname);
+    std::string line;
+    std::string x, y;
+    while (std::getline(infile, line)) {
+        std::stringstream ls(line);
+        std::getline(ls, x, ',');
+        std::getline(ls, y);
+        cv::Point2f p(std::stof(x), std::stof(y));
+        points.push_back(p);
+    }
+    infile.close();
+}
+
 int main(int argc, char* argv[]) {
+    int userSelect = -1;
+
+
+
+
     std::ifstream infile("points.txt");
     std::string line;
     std::string x, y;
@@ -22,19 +56,16 @@ int main(int argc, char* argv[]) {
     }
     infile.close();
 
-
+    std::vector<cv::Point2f> points2;
+    generateRandPoints(points2, 20, 500, 500);
     cv::Mat whiteMatrix(500, 500, CV_8UC3, cv::Scalar(255, 255, 255));
     cv::Scalar point_color(0, 0, 0);
     cv::namedWindow("Convex Hull");
     std::vector<cv::Point2f> hull;
     
-    for (cv::Point p : points) {
+    for (cv::Point p : points2) {
         cv::line(whiteMatrix, p, p, point_color, 10);
     }
-    Giftwrapping::convexHullVis(points, hull, whiteMatrix);
-    /*
-    cv::imshow("Convex Hull", whiteMatrix);
-    cv::waitKey(0);
-*/
+    Giftwrapping::convexHullVis(points2, hull, whiteMatrix);
     return 0;
 }
