@@ -54,6 +54,9 @@ void Giftwrapping::convexHullVis(std::vector<cv::Point2f> points, std::vector<cv
 		if (hull.size() > 1) {
 			cv::line(matrix, hull.end()[-2], hull.end()[-1], green, 5);
 		}
+		else {
+			cv::line(matrix, hull.front(), hull.front(), green, 5);
+		}
 		cv::imshow("Convex Hull", matrix);
 		cv::waitKey(0);
 		q = (p + 1) % num_points;
