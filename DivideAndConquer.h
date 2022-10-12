@@ -45,6 +45,8 @@ public:
 
     //returning the value of convex hull
     vector<Point> convexHull(vector<Point> a);
+    //draw convex hull step by step
+    void convexHullVis(vector<cv::Point> points, vector<cv::Point>& hull, cv::Mat& matrix);
 };
 
 #endif //CONVEX_HULL_DIVIDEANDCONQUER_H

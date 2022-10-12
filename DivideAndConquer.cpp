@@ -138,17 +138,30 @@ vector<Point> DivideAndConquer::bruteHull(vector<Point> a) {
 
 //returning the value of convex hull
 vector<Point> DivideAndConquer::convexHull(vector<Point> a) {
-    if (a.size() <= 5)
+
+    if (a.size() <= 3) {
         return bruteHull(a);
+    }
+
     // left contains the left half points
     // right contains the right half points
     vector<Point> left, right;
-    for (int i = 0; i < a.size() / 2; i++)
+
+    for (int i = 0; i < a.size() / 2; i++) {
         left.push_back(a[i]);
-    for (int i = a.size() / 2; i < a.size(); i++)
+    }
+
+    for (int i = a.size() / 2; i < a.size(); i++) {
         right.push_back(a[i]);
+    }
+
     vector<Point> left_hull = convexHull(left);
     vector<Point> right_hull = convexHull(right);
     //merging the convex hulls
     return merger(left_hull, right_hull);
+}
+
+//draw convex hull step by step
+void convexHullVis(vector<cv::Point> points, vector<cv::Point>& hull, cv::Mat& matrix) {
+
 }

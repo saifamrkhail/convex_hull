@@ -11,23 +11,20 @@ using namespace std;
 int g_switch_value = 0;
 int g_switch_value_performance = 0;
 
-static void help(char** argv)
-{
+static void help(char **argv) {
     cout << "\nThis program demonstrates the use of different convexHull algorithms.\n"
          << "Call:\n"
          << argv[0] << endl;
 }
 
 
-void performanceTest(int cols, int rows)
-{
-    Timing* measureTime = Timing::getInstance();
+void performanceTest(int cols, int rows) {
+    Timing *measureTime = Timing::getInstance();
     vector<Point> points;
-    RNG& rng_perf = theRNG();
+    RNG &rng_perf = theRNG();
     // number of points
     int i, count = 1000000;
-    for (i = 0; i < count; i++)
-    {
+    for (i = 0; i < count; i++) {
         Point pt;
         pt.x = rng_perf.uniform(cols / 4, cols * 3 / 4);
         pt.y = rng_perf.uniform(rows / 4, rows * 3 / 4);
@@ -48,36 +45,31 @@ void performanceTest(int cols, int rows)
     }
 }
 
-void switch_callback(int, void*) {
+void switch_callback(int, void *) {
     if (g_switch_value == 0) {
         cout << "\nOpenCV" << endl;
-    }
-    else if (g_switch_value == 1) {
+    } else if (g_switch_value == 1) {
         cout << "\nGraham Scan" << endl;
-    }
-    else
-    {
+    } else {
         cout << "\nDivide & Conquer" << endl;
     }
 }
 
-void switch_callback_perf(int, void*) {
+void switch_callback_perf(int, void *) {
     if (g_switch_value_performance == 0) {
         cout << "\nVisual" << endl;
-    }
-    else {
+    } else {
         cout << "\nPerformance" << endl;
     }
 }
 
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     std::cout << "Divide and Conquer Algorithm" << std::endl;
     DivideAndConquer div_conq;
 
     CommandLineParser parser(argc, argv, "{help h||}");
-    if (parser.has("help"))
-    {
+    if (parser.has("help")) {
         help(argv);
         return 0;
     }
@@ -102,21 +94,21 @@ int main(int argc, char* argv[]) {
             switch_callback_perf
     );
 
-    RNG& rng = theRNG();
-    for (;;)
-    {
+    RNG &rng = theRNG();
+    while (true) {
         if (g_switch_value_performance == 0)
             // visualisation
         {
-            int i, count = (unsigned)rng % 30 + 20;
+            int i, count = (unsigned) rng % 30 + 20;
             vector<Point> points;
-            for (i = 0; i < count; i++)
-            {
+            for (i = 0; i < count; i++) {
                 Point pt;
                 pt.x = rng.uniform(img.cols / 4, img.cols * 3 / 4);
                 pt.y = rng.uniform(img.rows / 4, img.rows * 3 / 4);
                 points.push_back(pt);
             }
+
+            //TODO show here given Points
 
             sort(points.begin(), points.end(), [](Point p, Point q) {
                 if (p.x < q.x) return true;
@@ -129,19 +121,25 @@ int main(int argc, char* argv[]) {
             //convexHull(points, hull, true);
 
             img = Scalar::all(0);
-            for (i = 0; i < count; i++)
+            for (i = 0; i < count; i++) {
                 circle(img, points[i], 3, Scalar(0, 0, 255), FILLED, LINE_AA);
-            polylines(img, hull, true, Scalar(0, 255, 0), 1, LINE_AA);
+            }
 
+            polylines(img, hull, true, Scalar(0, 255, 0), 1, LINE_AA);
             imshow("Convex Hull", img);
+
         } else {
             // performance
             performanceTest(img.cols, img.rows);
             setTrackbarPos("Vis Perf", "Convex Hull", 0);
         }
-        char key = (char)waitKey();
-        if (key == 27 || key == 'q' || key == 'Q') // 'ESC'
+        char key = (char) waitKey();
+
+        if (key == 27 || key == 'q' || key == 'Q') {
             break;
+        }
+
     }
+
     return 0;
 }
