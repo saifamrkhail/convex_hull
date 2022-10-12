@@ -27,11 +27,12 @@ void Giftwrapping::convexHull(std::vector<cv::Point2f> points, std::vector<cv::P
 		p = q;
 	} while (p != i_min);
 	measureTime->stopRecord("Giftwrapping");
-	measureTime->print(true);
+	measureTime->print(false);
 }
 
 void Giftwrapping::convexHullVis(std::vector<cv::Point2f> points, std::vector<cv::Point2f>& hull, cv::Mat& matrix)
 {
+	char key;
 	cv::Scalar blue(255, 0, 0);
 	cv::Scalar green(0, 255, 0);
 	cv::Scalar red(0, 0, 255);
@@ -47,7 +48,9 @@ void Giftwrapping::convexHullVis(std::vector<cv::Point2f> points, std::vector<cv
 		}
 	}
 	cv::imshow("Convex Hull", matrix);
-	cv::waitKey(0);
+	key = cv::waitKey(0);
+	if (key == 27 || key == 'q' || key == 'Q')
+		return;
 	int p = i_min, q;
 	do {
 		hull.push_back(points[p]);
@@ -58,19 +61,25 @@ void Giftwrapping::convexHullVis(std::vector<cv::Point2f> points, std::vector<cv
 			cv::line(matrix, hull.front(), hull.front(), green, 5);
 		}
 		cv::imshow("Convex Hull", matrix);
-		cv::waitKey(0);
+		key = cv::waitKey(0);
+		if (key == 27 || key == 'q' || key == 'Q')
+			return;
 		q = (p + 1) % num_points;
 		cv::line(matrix, points[p], points[p], blue, 10);
 		cv::line(matrix, points[q], points[q], blue, 10);
 		cv::imshow("Convex Hull", matrix);
-		cv::waitKey(0);
+		key = cv::waitKey(0);
+		if (key == 27 || key == 'q' || key == 'Q')
+			return;
 		for (int i = 0; i < num_points; i++) {
 			if (i == p || i == q) {
 				continue;
 			}
 			cv::line(matrix, points[i], points[i], red, 10);
 			cv::imshow("Convex Hull", matrix);
-			cv::waitKey(0);
+			key = cv::waitKey(0);
+			if (key == 27 || key == 'q' || key == 'Q')
+				return;
 			if (orient2d(points[p], points[q], points[i]) > 0) {
 				cv::line(matrix, points[i], points[i], blue, 10);
 				cv::line(matrix, points[q], points[q], black, 10);
@@ -80,7 +89,9 @@ void Giftwrapping::convexHullVis(std::vector<cv::Point2f> points, std::vector<cv
 				cv::line(matrix, points[i], points[i], black, 10);
 			}
 			cv::imshow("Convex Hull", matrix);
-			cv::waitKey(0);
+			key = cv::waitKey(0);
+			if (key == 27 || key == 'q' || key == 'Q')
+				return;
 		}
 		cv::line(matrix, points[p], points[p], black, 10);
 		cv::line(matrix, points[q], points[q], black, 10);
