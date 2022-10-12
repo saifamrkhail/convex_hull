@@ -83,6 +83,7 @@ int main(int argc, char* argv[]) {
         break; // VISUAL wie case 1 nur mit divide_conquer::convexHullVis(points, hull, whiteMatrix);
     }
     case 4: {
+        // performance wie case 2 nur mit divide_conquer::convexHull(points, hull);
         std::cout << "Enter filename:" << std::endl;
         std::string fname;
         std::cin >> fname;
@@ -97,7 +98,7 @@ int main(int argc, char* argv[]) {
                 std::cout << "(" << p.x << ", " << p.y << ")" << std::endl;
             }
         }
-        break; // performance wie case 2 nur mit divide_conquer::convexHull(points, hull);; 
+        break;
     }
     default:
         break;
