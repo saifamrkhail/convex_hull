@@ -1,145 +1,106 @@
-#include <opencv4/opencv2/imgproc.hpp>
-#include <opencv4/opencv2/highgui.hpp>
-#include <algorithm>
-
+#include <iostream> 
+#include <fstream> 
+#include <string>
+#include <sstream>
+#include <vector>
+#include <opencv2/core/types.hpp>
+#include<opencv2/highgui/highgui.hpp>
+#include<opencv2/imgproc/imgproc.hpp>
+#include "Giftwrapping.h"
 #include "DivideAndConquer.h"
-#include "Timing.h"
 
-using namespace cv;
-using namespace std;
-
-int g_switch_value = 0;
-int g_switch_value_performance = 0;
-
-static void help(char **argv) {
-    cout << "\nThis program demonstrates the use of different convexHull algorithms.\n"
-         << "Call:\n"
-         << argv[0] << endl;
+void displayMenu() {
+    std::cout << "===================================================== \n";
+    std::cout << " \t\tMENU \t \n ";
+    std::cout << "===================================================== \n";
+    std::cout << "GIFTWRAPPING: \n";
+    std::cout << " 1.Visualize for Random Points\n";
+    std::cout << " 2.Test Performance for File Points\n";
+    std::cout << "===================================================== \n";
+    std::cout << "DIVIDE AND CONQUER: \n";
+    std::cout << " 3.Visualize for Random Points\n";
+    std::cout << " 4.Test Performance for File Points\n";
 }
 
-
-void performanceTest(int cols, int rows) {
-    Timing *measureTime = Timing::getInstance();
-    vector<Point2f> points;
-    RNG &rng_perf = theRNG();
-    // number of points
-    int i, count = 1000000;
-    for (i = 0; i < count; i++) {
-        Point2f pt;
-        pt.x = rng_perf.uniform(cols / 4, cols * 3 / 4);
-        pt.y = rng_perf.uniform(rows / 4, rows * 3 / 4);
-        points.push_back(pt);
-    }
-    vector<Point2f> hull;
-    if (g_switch_value == 0) {
-        // OpenCV
-        // measureTime->startSetup();
-        cout << "\nOpenOV convexHull algorithm" << endl;
-        measureTime->startRecord("Open CV");
-        // measureTime->startComputation();
-        convexHull(points, hull, true);
-        // g_switch_value_performance = 0;
-        measureTime->stopRecord("Open CV");
-        measureTime->print(true);
-        // cout << "\nTime:" << measureTime->getResults() << endl;
+void generateRandPoints(std::vector<cv::Point2f>& points, int n, int xlim, int ylim) {
+    cv::RNG& rng = cv::theRNG();
+    for (int i = 0; i < n; i++) {
+        points.push_back(cv::Point2f(rng.uniform(xlim / 8, xlim * 7 / 8), rng.uniform(ylim / 8, ylim * 7 / 8)));
     }
 }
 
-void switch_callback(int, void *) {
-    if (g_switch_value == 0) {
-        cout << "\nOpenCV" << endl;
-    } else if (g_switch_value == 1) {
-        cout << "\nGraham Scan" << endl;
-    } else {
-        cout << "\nDivide & Conquer" << endl;
+void pointsFromFile(std::vector<cv::Point2f>& points, std::string fname) {
+    std::ifstream infile(fname);
+    std::string line;
+    std::string x, y;
+    while (std::getline(infile, line)) {
+        std::stringstream ls(line);
+        std::getline(ls, x, ',');
+        std::getline(ls, y);
+        cv::Point2f p(std::stof(x), std::stof(y));
+        points.push_back(p);
     }
+    infile.close();
 }
 
-void switch_callback_perf(int, void *) {
-    if (g_switch_value_performance == 0) {
-        cout << "\nVisual" << endl;
-    } else {
-        cout << "\nPerformance" << endl;
-    }
-}
+int main(int argc, char* argv[]) {
 
-
-int main(int argc, char *argv[]) {
-    std::cout << "Divide and Conquer Algorithm" << std::endl;
-    DivideAndConquer divideAndConquer;
-
-    CommandLineParser parser(argc, argv, "{help h||}");
-    if (parser.has("help")) {
-        help(argv);
-        return 0;
-    }
-    Mat img(500, 500, CV_8UC3);
-
-    // Name the main window
-    namedWindow("Convex Hull", 1);
-
-    createTrackbar(
-            "CV G D&C",
-            "Convex Hull",
-            &g_switch_value,
-            2,
-            switch_callback
-    );
-
-    createTrackbar(
-            "Vis Perf",
-            "Convex Hull",
-            &g_switch_value_performance,
-            1,
-            switch_callback_perf
-    );
-
-    RNG &rng = theRNG();
-    while (true) {
-        if (g_switch_value_performance == 0) {
-            // visualisation
-            int i, count = (unsigned) rng % 30 + 20;
-
-            vector<Point2f> points;
-
-            for (i = 0; i < count; i++) {
-                Point2f pt;
-                pt.x = rng.uniform(img.cols / 4, img.cols * 3 / 4);
-                pt.y = rng.uniform(img.rows / 4, img.rows * 3 / 4);
-                points.push_back(pt);
-            }
-
-            cv::Mat whiteMatrix(500, 500, CV_8UC3, cv::Scalar(255, 255, 255));
-
-            for (i = 0; i < count; i++) {
-                circle(whiteMatrix, points[i], 3, Scalar(0, 0, 255), FILLED, LINE_AA);
-            }
-
-            vector<Point2f> hull;
-            //divide and conquer step by step
-            //divideAndConquer.convexHullVis(points, hull, whiteMatrix);
-
-            //convex hull in one shot
-            hull = divideAndConquer.convexHull(points);
-            img = Scalar::all(0);
-            for (i = 0; i < count; i++) {
-                circle(img, points[i], 3, Scalar(0, 0, 255), FILLED, LINE_AA);
-            }
-            polylines(img, hull, true, Scalar(0, 255, 0), 1, LINE_AA);
-            imshow("Convex Hull", img);
-
-        } else {
-            // performance
-            performanceTest(img.cols, img.rows);
-            setTrackbarPos("Vis Perf", "Convex Hull", 0);
+    int userSelect = -1;
+    displayMenu();
+    std::cin >> userSelect;
+    std::vector<cv::Point2f> points;
+    std::vector<cv::Point2f> hull;
+    switch (userSelect)
+    {
+    case 1: {
+        generateRandPoints(points, 20, 500, 500);
+        cv::Mat whiteMatrix(500, 500, CV_8UC3, cv::Scalar(255, 255, 255));
+        cv::Scalar point_color(0, 0, 0);
+        cv::namedWindow("Convex Hull");
+        for (cv::Point p : points) {
+            cv::line(whiteMatrix, p, p, point_color, 10);
         }
-        char key = (char) waitKey();
-
-        if (key == 27 || key == 'q' || key == 'Q') {
-            break;
-        }
-
+        Giftwrapping::convexHullVis(points, hull, whiteMatrix);
+        break;
     }
-
+    case 2: {
+        std::cout << "Enter filename:" << std::endl;
+        std::string fname;
+        std::cin >> fname;
+        std::cout << "Print Hull Points [Y/N]:" << std::endl;
+        char prnt;
+        std::cin >> prnt;
+        pointsFromFile(points, fname);
+        Giftwrapping::convexHull(points, hull);
+        if (prnt == 'Y' || prnt == 'y') {
+            for (cv::Point2f p : hull) {
+                std::cout << "(" << p.x << ", " << p.y << ")" << std::endl;
+            }
+        }
+        break;
+    }
+    case 3: {
+        break; // VISUAL wie case 1 nur mit divide_conquer::convexHullVis(points, hull, whiteMatrix);
+    }
+    case 4: {
+        std::cout << "Enter filename:" << std::endl;
+        std::string fname;
+        std::cin >> fname;
+        std::cout << "Print Hull Points [Y/N]:" << std::endl;
+        char prnt;
+        std::cin >> prnt;
+        pointsFromFile(points, fname);
+        DivideAndConquer divideAndConquer;
+        hull = divideAndConquer.convexHull(points);
+        if (prnt == 'Y' || prnt == 'y') {
+            for (cv::Point2f p : hull) {
+                std::cout << "(" << p.x << ", " << p.y << ")" << std::endl;
+            }
+        }
+        break; // performance wie case 2 nur mit divide_conquer::convexHull(points, hull);; 
+    }
+    default:
+        break;
+    }
     return 0;
 }

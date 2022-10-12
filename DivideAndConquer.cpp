@@ -18,17 +18,8 @@ int DivideAndConquer::quad(Point2f p) {
 
 //if line is touching the polygon
 int DivideAndConquer::calcLine(Point2f a, Point2f b, Point2f c) {
-    int res = (b.y - a.y) * (c.x - b.x) -
-              (c.y - b.y) * (b.x - a.x);
-    if (res == 0) {
-        return 0;
-    }
 
-    if (res > 0) {
-        return 1;
-    }
-
-    return -1;
+    return (b.y-a.y)*(c.x-b.x) - (c.y-b.y)*(b.x-a.x);
 }
 
 //comparing functions for sorting
@@ -71,7 +62,7 @@ vector<Point2f> DivideAndConquer::merger(vector<Point2f> a, vector<Point2f> b) {
     while (!done) {
         done = 1;
 
-        while (calcLine(b[indb], a[inda], a[(inda + 1) % n1]) >= 0) {
+        while (calcLine(b[indb], a[inda], a[(inda + 1) % n1]) > 0) {
             inda = (inda + 1) % n1;
         }
 
@@ -166,6 +157,7 @@ vector<Point2f> DivideAndConquer::bruteHull(vector<Point2f> a) {
 vector<Point2f> DivideAndConquer::convexHull(vector<Point2f> points) {
 
     Timing* measureTime = Timing::getInstance();
+    measureTime->startRecord("Divide and Conquer");
 
     sort(points.begin(), points.end(), [](Point2f p, Point2f q) {
         if (p.x < q.x) return true;
@@ -174,7 +166,7 @@ vector<Point2f> DivideAndConquer::convexHull(vector<Point2f> points) {
         return false;
     });
 
-    if (points.size() < 3) {
+    if (points.size() <= 5) {
         return bruteHull(points);
     }
 
@@ -182,11 +174,11 @@ vector<Point2f> DivideAndConquer::convexHull(vector<Point2f> points) {
     // right contains the right half points
     vector<Point2f> left, right;
 
-    for (int i = 0; i < points.size() / 2; i++) {
+    for (int i = 0; i < points.size() / 2.0; i++) {
         left.push_back(points[i]);
     }
 
-    for (int i = points.size() / 2; i < points.size(); i++) {
+    for (int i = points.size() / 2.0; i < points.size(); i++) {
         right.push_back(points[i]);
     }
 
@@ -194,13 +186,10 @@ vector<Point2f> DivideAndConquer::convexHull(vector<Point2f> points) {
     vector<Point2f> left_hull = convexHull(left);
     vector<Point2f> right_hull = convexHull(right);
 
-    measureTime->stopRecord("Giftwrapping");
-    measureTime->print(false);
-
     //merging the convex hulls
     vector<Point2f> hull = merger(left_hull, right_hull);
 
-    measureTime->stopRecord("Giftwrapping");
+    measureTime->stopRecord("Divide and Conquer");
     measureTime->print(false);
 
     return hull;
@@ -222,12 +211,11 @@ void DivideAndConquer::convexHullVis(vector<cv::Point2f> points, vector<cv::Poin
         return false;
     });
 
-    if (points.size() < 3) {
+    if (points.size() <=5 ) {
         return ;
     }
 
     cv::imshow("Convex Hull", matrix);
     cv::waitKey(0);
-
 
 }

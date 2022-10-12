@@ -14,7 +14,7 @@ using namespace cv;
 using namespace std;
 
 struct comparePoint {
-    bool operator()(const Point & a, const Point & b) {
+    bool operator()(const Point2f & a, const Point2f & b) const {
         if (a.x < b.x) return true;
         if (a.x > b.x) return false;
         if (a.y < b.y) return true;
