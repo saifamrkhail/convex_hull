@@ -66,6 +66,7 @@ vector<Point> DivideAndConquer::merger(vector<Point> a, vector<Point> b) {
 
     int inda = ia, indb = ib;
     bool done = 0;
+    //calculating the upper tangent
     while (!done) {
         done = 1;
 
@@ -93,21 +94,26 @@ vector<Point> DivideAndConquer::merger(vector<Point> a, vector<Point> b) {
             done = 0;
         }
     }
+
     int lowera = inda, lowerb = indb;
     vector<Point> ret;
     //merging the two polygons to get convex hull
     int ind = uppera;
     ret.push_back(a[uppera]);
+
     while (ind != lowera) {
         ind = (ind + 1) % n1;
         ret.push_back(a[ind]);
     }
+
     ind = lowerb;
     ret.push_back(b[lowerb]);
+
     while (ind != upperb) {
         ind = (ind + 1) % n2;
         ret.push_back(b[ind]);
     }
+
     return ret;
 }
 
