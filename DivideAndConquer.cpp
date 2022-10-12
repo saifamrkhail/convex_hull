@@ -3,6 +3,7 @@
 //
 
 #include "DivideAndConquer.h"
+#include "Timing.h"
 
 //calculating the quadrant of a particular point
 int DivideAndConquer::quad(Point p) {
@@ -164,6 +165,8 @@ vector<Point> DivideAndConquer::bruteHull(vector<Point> a) {
 //returning the value of convex hull
 vector<Point> DivideAndConquer::convexHull(vector<Point> points) {
 
+    Timing* measureTime = Timing::getInstance();
+
     sort(points.begin(), points.end(), [](Point p, Point q) {
         if (p.x < q.x) return true;
         if (p.x > q.x) return false;
@@ -191,8 +194,16 @@ vector<Point> DivideAndConquer::convexHull(vector<Point> points) {
     vector<Point> left_hull = convexHull(left);
     vector<Point> right_hull = convexHull(right);
 
+    measureTime->stopRecord("Giftwrapping");
+    measureTime->print(false);
+
     //merging the convex hulls
-    return merger(left_hull, right_hull);
+    vector<Point> hull = merger(left_hull, right_hull);
+
+    measureTime->stopRecord("Giftwrapping");
+    measureTime->print(false);
+
+    return hull;
 }
 
 //draw convex hull step by step
