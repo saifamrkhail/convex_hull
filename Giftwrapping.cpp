@@ -3,13 +3,16 @@
 
 void Giftwrapping::convexHull(std::vector<cv::Point2f> points, std::vector<cv::Point2f>& hull)
 {
+	Timing* measureTime = Timing::getInstance();
 	int num_points = points.size();
 	if (num_points < 3) return;
+	measureTime->startRecord("Giftwrapping");
 	float x_min = points[0].x;
 	int i_min = 0;
 	for (int i = 0; i < num_points; i++) {
 		if (points[i].x < x_min) {
 			i_min = i;
+			x_min = points[i].x;
 		}
 	}
 	int p = i_min, q;
@@ -23,6 +26,8 @@ void Giftwrapping::convexHull(std::vector<cv::Point2f> points, std::vector<cv::P
 		}
 		p = q;
 	} while (p != i_min);
+	measureTime->stopRecord("Giftwrapping");
+	measureTime->print(true);
 }
 
 void Giftwrapping::convexHullVis(std::vector<cv::Point2f> points, std::vector<cv::Point2f>& hull, cv::Mat& matrix)
@@ -38,6 +43,7 @@ void Giftwrapping::convexHullVis(std::vector<cv::Point2f> points, std::vector<cv
 	for (int i = 0; i < num_points; i++) {
 		if (points[i].x < x_min) {
 			i_min = i;
+			x_min = points[i].x;
 		}
 	}
 	cv::imshow("Convex Hull", matrix);
