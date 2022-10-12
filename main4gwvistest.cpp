@@ -12,8 +12,13 @@ void displayMenu() {
     std::cout << "===================================================== \n";
     std::cout << " \t\tMENU \t \n ";
     std::cout << "===================================================== \n";
+    std::cout << "GIFTWRAPPING: \n";
     std::cout << " 1.Visualize for Random Points\n";
     std::cout << " 2.Test Performance for File Points\n";
+    std::cout << "===================================================== \n";
+    std::cout << "DIVIDE AND CONQUER: \n";
+    std::cout << " 3.Visualize for Random Points\n";
+    std::cout << " 4.Test Performance for File Points\n";
 }
 
 void generateRandPoints(std::vector<cv::Point2f>& points, int n, int xlim, int ylim) {
@@ -66,6 +71,12 @@ int main(int argc, char* argv[]) {
             std::cout << "(" << p.x << ", " << p.y << ")" << std::endl;
         }
         break;
+    }
+    case 3: {
+        break; // VISUAL wie case 1 nur mit divide_conquer::convexHullVis(points, hull, whiteMatrix);
+    }
+    case 4: {
+        break; // performance wie case 2 nur mit divide_conquer::convexHull(points, hull);; 
     }
     default:
         break;
