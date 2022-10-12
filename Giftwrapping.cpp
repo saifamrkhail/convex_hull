@@ -20,7 +20,8 @@ void Giftwrapping::convexHull(std::vector<cv::Point2f> points, std::vector<cv::P
 		hull.push_back(points[p]);
 		q = (p + 1) % num_points;
 		for (int i = 0; i < num_points; i++) {
-			if (orient2d(points[p], points[q], points[i]) < 0) {
+			float orient = orient2d(points[p], points[q], points[i]);
+			if (orient > 0 || (orient == 0 && (qdist(points[p], points[q]) < qdist(points[p], points[i])))) {
 				q = i;
 			}
 		}
@@ -80,7 +81,8 @@ void Giftwrapping::convexHullVis(std::vector<cv::Point2f> points, std::vector<cv
 			key = cv::waitKey(0);
 			if (key == 27 || key == 'q' || key == 'Q')
 				return;
-			if (orient2d(points[p], points[q], points[i]) > 0) {
+			float orient = orient2d(points[p], points[q], points[i]);
+			if (orient > 0 || (orient == 0 && (qdist(points[p], points[q]) < qdist(points[p], points[i])))) {
 				cv::line(matrix, points[i], points[i], blue, 10);
 				cv::line(matrix, points[q], points[q], black, 10);
 				q = i;
@@ -105,4 +107,8 @@ void Giftwrapping::convexHullVis(std::vector<cv::Point2f> points, std::vector<cv
 float Giftwrapping::orient2d(cv::Point2f a, cv::Point2f b, cv::Point2f c)
 {
 	return (a.x - c.x) * (b.y - c.y) - (b.x - c.x) * (a.y - c.y);
+}
+
+float Giftwrapping::qdist(cv::Point2f a, cv::Point2f b) {
+	return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
 }
