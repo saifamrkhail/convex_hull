@@ -1,13 +1,13 @@
 #include <iostream> 
 #include <fstream> 
 #include <string>
-#include <sstream>
 #include <vector>
 #include <opencv2/core/types.hpp>
 #include<opencv2/highgui/highgui.hpp>
 #include<opencv2/imgproc/imgproc.hpp>
 #include "Giftwrapping.h"
 #include "DivideAndConquer.h"
+#include "VisDivideAndConquer.h"
 
 void displayMenu() {
     std::cout << "===================================================== \n";
@@ -80,7 +80,13 @@ int main(int argc, char* argv[]) {
         break;
     }
     case 3: {
-        break; // VISUAL wie case 1 nur mit divide_conquer::convexHullVis(points, hull, whiteMatrix);
+        // VISUAL wie case 1 nur mit divide_conquer::convexHullVis(points, hull, whiteMatrix);
+        generateRandPoints(points, 20, 500, 500);
+        cv::Scalar point_color(0, 0, 0);
+        cv::namedWindow("Convex Hull");
+        VisDivideAndConquer visDivideAndConquer;
+        visDivideAndConquer.visConvexHull(points);
+        break;
     }
     case 4: {
         // performance wie case 2 nur mit divide_conquer::convexHull(points, hull);
@@ -91,8 +97,12 @@ int main(int argc, char* argv[]) {
         char prnt;
         std::cin >> prnt;
         pointsFromFile(points, fname);
+        Timing* measureTime = Timing::getInstance();
+        measureTime->startRecord("Divide and Conquer");
         DivideAndConquer divideAndConquer;
         hull = divideAndConquer.convexHull(points);
+        measureTime->stopRecord("Divide and Conquer");
+        measureTime->print(false);
         if (prnt == 'Y' || prnt == 'y') {
             for (cv::Point2f p : hull) {
                 std::cout << "(" << p.x << ", " << p.y << ")" << std::endl;

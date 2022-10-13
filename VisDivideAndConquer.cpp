@@ -1,11 +1,19 @@
 //
-// Created by saif on 10/11/22.
+// Created by saif on 10/13/22.
 //
 
-#include "DivideAndConquer.h"
+#include "VisDivideAndConquer.h"
+
+cv::Mat whiteMatrix(500, 500, CV_8UC3, cv::Scalar(255, 255, 255));
+cv::Scalar blue(255, 0, 0);
+cv::Scalar green(0, 255, 0);
+cv::Scalar red(0, 0, 255);
+cv::Scalar black(0, 0, 0);
+char key;
+bool firstRun = true;
 
 //calculating the quadrant of a particular Point2f
-int DivideAndConquer::quad(Point2f p) {
+int VisDivideAndConquer::quad(Point2f p) {
     if (p.x >= 0 && p.y >= 0)
         return 1;
     if (p.x <= 0 && p.y >= 0)
@@ -16,13 +24,13 @@ int DivideAndConquer::quad(Point2f p) {
 }
 
 //if line is touching the polygon
-int DivideAndConquer::calcLine(Point2f a, Point2f b, Point2f c) {
+int VisDivideAndConquer::calcLine(Point2f a, Point2f b, Point2f c) {
 
     return (b.y-a.y)*(c.x-b.x) - (c.y-b.y)*(b.x-a.x);
 }
 
 //comparing functions for sorting
-bool DivideAndConquer::compare(Point2f p1, Point2f q1) {
+bool VisDivideAndConquer::compare(Point2f p1, Point2f q1) {
     Point2f p = Point2f(p1.x - mid.x,p1.y - mid.y);
     Point2f q = Point2f(q1.x - mid.x,q1.y - mid.y);
     int one = quad(p);
@@ -33,7 +41,8 @@ bool DivideAndConquer::compare(Point2f p1, Point2f q1) {
 }
 
 //finding the upper tangent for both polygons
-vector<Point2f> DivideAndConquer::merger(vector<Point2f> a, vector<Point2f> b) {
+vector<Point2f> VisDivideAndConquer::merger(vector<Point2f> a, vector<Point2f> b) {
+
     int n1 = a.size(), n2 = b.size();
 
     if (n1 == 0) {
@@ -53,11 +62,25 @@ vector<Point2f> DivideAndConquer::merger(vector<Point2f> a, vector<Point2f> b) {
         }
     }
 
+    cv::line(whiteMatrix, a[ia], a[ia], red, 10);
+    cv::imshow("Convex Hull", whiteMatrix);
+    key = cv::waitKey(0);
+    if (key == 27 || key == 'q' || key == 'Q') {
+        exit(0);
+    }
+
     //calculating leftmost point of b
     for (int i = 1; i < n2; i++) {
         if (b[i].x < b[ib].x) {
             ib = i;
         }
+    }
+
+    cv::line(whiteMatrix, b[ib], b[ib], green, 10);
+    cv::imshow("Convex Hull", whiteMatrix);
+    key = cv::waitKey(0);
+    if (key == 27 || key == 'q' || key == 'Q') {
+        exit(0);
     }
 
     int inda = ia, indb = ib;
@@ -70,9 +93,23 @@ vector<Point2f> DivideAndConquer::merger(vector<Point2f> a, vector<Point2f> b) {
             inda = (inda + 1) % n1;
         }
 
+        cv::line(whiteMatrix, a[inda], a[inda], green, 10);
+        cv::imshow("Convex Hull", whiteMatrix);
+        key = cv::waitKey(0);
+        if (key == 27 || key == 'q' || key == 'Q') {
+            exit(0);
+        }
+
         while (calcLine(a[inda], b[indb], b[(n2 + indb - 1) % n2]) <= 0) {
             indb = (n2 + indb - 1) % n2;
             done = 0;
+        }
+
+        cv::line(whiteMatrix, b[indb], b[indb], green, 10);
+        cv::imshow("Convex Hull", whiteMatrix);
+        key = cv::waitKey(0);
+        if (key == 27 || key == 'q' || key == 'Q') {
+            exit(0);
         }
     }
 
@@ -97,13 +134,35 @@ vector<Point2f> DivideAndConquer::merger(vector<Point2f> a, vector<Point2f> b) {
     int ind = uppera;
     ret.push_back(a[uppera]);
 
+    cv::line(whiteMatrix, a[uppera], b[upperb], green, 10);
+    cv::imshow("Convex Hull", whiteMatrix);
+    key = cv::waitKey(0);
+    if (key == 27 || key == 'q' || key == 'Q') {
+        exit(0);
+    }
+
+
     while (ind != lowera) {
         ind = (ind + 1) % n1;
         ret.push_back(a[ind]);
+
+        cv::line(whiteMatrix, a[ind], a[ind], green, 10);
+        cv::imshow("Convex Hull", whiteMatrix);
+        key = cv::waitKey(0);
+        if (key == 27 || key == 'q' || key == 'Q') {
+            exit(0);
+        }
     }
 
     ind = lowerb;
     ret.push_back(b[lowerb]);
+
+    cv::line(whiteMatrix, a[lowera], b[lowerb], green, 10);
+    cv::imshow("Convex Hull", whiteMatrix);
+    key = cv::waitKey(0);
+    if (key == 27 || key == 'q' || key == 'Q') {
+        exit(0);
+    }
 
     while (ind != upperb) {
         ind = (ind + 1) % n2;
@@ -114,8 +173,10 @@ vector<Point2f> DivideAndConquer::merger(vector<Point2f> a, vector<Point2f> b) {
 }
 
 //brute force algo to find convex hull
-vector<Point2f> DivideAndConquer::bruteHull(vector<Point2f> a) {
-    set<Point2f,comparePoint> s;
+vector<Point2f> VisDivideAndConquer::bruteHull(vector<Point2f> a) {
+
+    set<Point2f,VisComparePoint> s;
+
     for (int i = 0; i < a.size(); i++) {
         for (int j = i + 1; j < a.size(); j++) {
             int x1 = a[i].x, x2 = a[j].x;
@@ -133,12 +194,23 @@ vector<Point2f> DivideAndConquer::bruteHull(vector<Point2f> a) {
             if (pos == a.size() || neg == a.size()) {
                 s.insert(a[i]);
                 s.insert(a[j]);
+
+                cv::line(whiteMatrix, a[i], a[j], red, 10);
+                cv::imshow("Convex Hull", whiteMatrix);
+                key = cv::waitKey(0);
+                if (key == 27 || key == 'q' || key == 'Q') {
+                    exit(0);
+                }
             }
+
         }
     }
+
     vector<Point2f> ret;
-    for (auto e: s)
+    for (auto e: s) {
         ret.push_back(e);
+    }
+
     //moving through anti clockwise direction
     mid = {0, 0};
     int n = ret.size();
@@ -148,24 +220,44 @@ vector<Point2f> DivideAndConquer::bruteHull(vector<Point2f> a) {
         ret[i].x *= n;
         ret[i].y *= n;
     }
+
     sort(ret.begin(), ret.end(), [this] (Point2f p1, Point2f q1) {
         return compare(p1, q1);
     });
 
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++) {
         ret[i] = Point2f(ret[i].x / n, ret[i].y / n);
+    }
+
     return ret;
 }
 
 //returning the value of convex hull
-vector<Point2f> DivideAndConquer::convexHull(vector<Point2f> points) {
+vector<Point2f> VisDivideAndConquer::visConvexHull(vector<cv::Point2f> points) {
 
-    sort(points.begin(), points.end(), [](Point2f p, Point2f q) {
-        if (p.x < q.x) return true;
-        if (p.x > q.x) return false;
-        if (p.y < q.y) return true;
-        return false;
-    });
+    if (firstRun) {
+        firstRun = false;
+
+        cv::namedWindow("Convex Hull");
+
+        for (cv::Point p : points) {
+            cv::line(whiteMatrix, p, p, black, 10);
+        }
+
+        cv::imshow("Convex Hull", whiteMatrix);
+        key = cv::waitKey(0);
+
+        if (key == 27 || key == 'q' || key == 'Q') {
+            exit(0);
+        }
+
+        sort(points.begin(), points.end(), [](Point2f p, Point2f q) {
+            if (p.x < q.x) return true;
+            if (p.x > q.x) return false;
+            if (p.y < q.y) return true;
+            return false;
+        });
+    }
 
     if (points.size() <= 5) {
         return bruteHull(points);
@@ -184,9 +276,11 @@ vector<Point2f> DivideAndConquer::convexHull(vector<Point2f> points) {
     }
 
     //divide in left and right
-    vector<Point2f> left_hull = convexHull(left);
-    vector<Point2f> right_hull = convexHull(right);
+    vector<Point2f> left_hull = visConvexHull(left);
+    vector<Point2f> right_hull = visConvexHull(right);
 
     //merging the convex hulls
-    return merger(left_hull, right_hull);
+    vector<Point2f> hull = merger(left_hull, right_hull);
+
+    return hull;
 }
