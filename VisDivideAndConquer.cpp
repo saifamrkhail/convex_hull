@@ -5,7 +5,6 @@
 #include "VisDivideAndConquer.h"
 
 cv::Mat whiteMatrix(500, 500, CV_8UC3, cv::Scalar(255, 255, 255));
-cv::Scalar blue(255, 0, 0);
 cv::Scalar green(0, 255, 0);
 cv::Scalar red(0, 0, 255);
 cv::Scalar black(0, 0, 0);
